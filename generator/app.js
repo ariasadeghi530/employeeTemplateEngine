@@ -5,7 +5,16 @@ const initQuestions = [
   'What is your name?',
   'What is your ID?',
   'What is your office number?',
-  'How many engineers and interns are on your team?'
+  'How many engineers are on your team?',
+  'How many interns are on your team?'
+];
+
+//questions for employees
+const employQuestions = [
+  'What is your name?',
+  'What is your ID?',
+  'What is your GitHub username?',
+  'What is your school name?'
 ];
 
 
@@ -23,7 +32,7 @@ class Employee {
     return this.id;
   }
   getEmail() {
-    return this.name + '@company.com';
+    return this.name.toLowerCase() + '@company.com';
   }
   getRole() {
     return this.title;
@@ -80,7 +89,7 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-
+//ask the manager the initial questions
 function init() {
 
   prompt([
@@ -101,24 +110,86 @@ function init() {
     },
     {
       type: 'number',
-      name: 'numEmployees',
+      name: 'numEngineers',
       message: initQuestions[3]
+    },
+    {
+      type: 'number',
+      name: 'numInterns',
+      message: initQuestions[4]
     }
   ])
 
     .then(response => {
       let theManager = new Manager(capitalize(response.name), response.id, response.officeNum);
       console.log(theManager);
-      // askEmployeeQuestions(response.numEmployees);
+
+      askEngineerQuestions(response.numEngineers, response.numInterns);
     })
     .catch(e => console.error(e));
 
 }
 
-// function askEmployeeQuestions(num){
-//   for(let i = 0; i < num; i++){
-    
-//   }
-// }
+//ask the engineers the related questions
+async function askEngineerQuestions(numEng, numInt) {
+  console.log('Engineers, follow instructions to create profile.');
+  for (let i = 0; i < numEng; i++) {
+   const waitForEngAnswer = await prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: employQuestions[0]
+      },
+      {
+        type: 'number',
+        name: 'id',
+        message: employQuestions[1]
+      },
+      {
+        type: 'input',
+        name: 'github',
+        message: employQuestions[2],
+      }
+    ])
+      .then( response => {
+        let theEng = new Engineer(capitalize(response.name), response.id, response.github);
+        console.log(theEng);
+      })
+      .catch(e => console.error(e));
+    }
+    askInternQuestions(numInt);
+}
+
+//ask the interns the related questions
+async function askInternQuestions(numInt){
+  console.log('Interns, follow instructions to create profile.');
+
+  for (let i = 0; i < numInt; i++) {
+    const waitForEngAnswer = await prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: employQuestions[0]
+      },
+      {
+        type: 'number',
+        name: 'id',
+        message: employQuestions[1]
+      },
+      {
+        type: 'input',
+        name: 'school',
+        message: employQuestions[3],
+      }
+    ])
+      .then(response => {
+        let theInt = new Engineer(capitalize(response.name), response.id, response.school);
+        console.log(theInt);
+      })
+      .catch(e => console.error(e));
+  }
+}
+  
+
 
 init();
