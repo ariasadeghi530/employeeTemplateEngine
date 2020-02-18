@@ -23,6 +23,7 @@ const employQuestions = [
   'What is your school name?'
 ];
 
+let employeeArr = [];
 
 // capitalize first letter of string
 function capitalize(s) {
@@ -34,7 +35,7 @@ function capitalize(s) {
 
 //ask the manager the initial questions
 function init() {
-
+console.log('Manager, follow instructions to create your team page.')
   prompt([
     {
       type: 'input',
@@ -69,9 +70,7 @@ function init() {
   ])
 
     .then(response => {
-      let theManager = new Manager(capitalize(response.name), response.id, response.email, response.officeNum);
-      console.log(theManager);
-
+      employeeArr.push(new Manager(capitalize(response.name), response.id, response.email, response.officeNum));
       askEngineerQuestions(response.numEngineers, response.numInterns);
     })
     .catch(e => console.error(e));
@@ -80,8 +79,8 @@ function init() {
 
 //ask the engineers the related questions
 async function askEngineerQuestions(numEng, numInt) {
-  console.log('Engineers, follow instructions to create profile.');
   for (let i = 0; i < numEng; i++) {
+    console.log(`Engineer${i + 1}, follow instructions to create your profile:`);
     const waitForEngAnswer = await prompt([
       {
         type: 'input',
@@ -105,8 +104,7 @@ async function askEngineerQuestions(numEng, numInt) {
       }
     ])
       .then(response => {
-        let theEng = new Engineer(capitalize(response.name), response.id, response.email, response.github);
-        console.log(theEng);
+        employeeArr.push(new Engineer(capitalize(response.name), response.id, response.email, response.github));
       })
       .catch(e => console.error(e));
   }
@@ -115,9 +113,9 @@ async function askEngineerQuestions(numEng, numInt) {
 
 //ask the interns the related questions
 async function askInternQuestions(numInt) {
-  console.log('Interns, follow instructions to create profile.');
-
+  
   for (let i = 0; i < numInt; i++) {
+    console.log(`Intern${i + 1}, follow instructions to create your profile:`);
     const waitForEngAnswer = await prompt([
       {
         type: 'input',
@@ -141,11 +139,11 @@ async function askInternQuestions(numInt) {
       }
     ])
       .then(response => {
-        let theInt = new Engineer(capitalize(response.name), response.id, response.email, response.school);
-        console.log(theInt);
+        employeeArr.push(new Intern(capitalize(response.name), response.id, response.email, response.school));
       })
       .catch(e => console.error(e));
   }
+  console.log(employeeArr);
 }
 
 function createHTML() {
