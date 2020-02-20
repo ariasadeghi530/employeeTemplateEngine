@@ -3,6 +3,7 @@ const Employee = require("./lib/Employee");
 const Manager = require('./lib/Manager.js');
 const Engineer = require('./lib/Engineer.js');
 const Intern = require('./lib/Intern.js');
+const fs = require('fs');
 
 //questions for manager
 const initQuestions = [
@@ -144,10 +145,6 @@ async function askInternQuestions(numInt) {
       .catch(e => console.error(e));
   }
   console.log(employeeArr);
-}
-
-function createHTML() {
-
 }
 
 
