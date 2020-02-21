@@ -3,6 +3,7 @@ const Employee = require("./lib/Employee");
 const Manager = require('./lib/Manager.js');
 const Engineer = require('./lib/Engineer.js');
 const Intern = require('./lib/Intern.js');
+const handlebars = require('handlebars');
 const fs = require('fs');
 
 //questions for manager
@@ -36,7 +37,7 @@ function capitalize(s) {
 
 //ask the manager the initial questions
 function init() {
-console.log('Manager, follow instructions to create your team page.')
+  console.log('Manager, follow instructions to create your team page.')
   prompt([
     {
       type: 'input',
@@ -114,7 +115,7 @@ async function askEngineerQuestions(numEng, numInt) {
 
 //ask the interns the related questions
 async function askInternQuestions(numInt) {
-  
+
   for (let i = 0; i < numInt; i++) {
     console.log(`Intern${i + 1}, follow instructions to create your profile:`);
     const waitForEngAnswer = await prompt([
@@ -145,7 +146,36 @@ async function askInternQuestions(numInt) {
       .catch(e => console.error(e));
   }
   console.log(employeeArr);
+  createHTML(employeeArr);
 }
 
+function createHTML(arr) {
+
+  for (let i = 0; i < arr.length; i++) {
+
+    if (arr[i] instanceof Manager) {
+      let text = fs.readFileSync("./templates/manager.html", 'utf8')
+      let template = handlebars.compile(text);
+      let result = template(arr[i]);
+    }
+
+    if (arr[i] instanceof Engineer) {
+      let text = fs.readFileSync("./templates/engineer.html", 'utf8')
+      let template = handlebars.compile(text);
+      let result = template(arr[i]);
+    }
+
+    if (arr[i] instanceof Intern) {
+      let text = fs.readFileSync("./templates/intern.html", 'utf8')
+      let template = handlebars.compile(text);
+      let result = template(arr[i]);
+    }
+
+
+  }
+
+
+
+}
 
 init();
