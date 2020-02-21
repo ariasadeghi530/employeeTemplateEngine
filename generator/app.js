@@ -25,6 +25,7 @@ const employQuestions = [
   'What is your school name?'
 ];
 
+//global variable to store employee objects
 let employeeArr = [];
 
 // capitalize first letter of string
@@ -145,36 +146,50 @@ async function askInternQuestions(numInt) {
       })
       .catch(e => console.error(e));
   }
-  console.log(employeeArr);
+  
   createHTML(employeeArr);
 }
 
-function createHTML(arr) {
+async function createHTML(arr) {
+  let cards = '';
+  
+  //create cards based on object types
+  const objectChecker = await arr.forEach( (elem) => {
 
-  for (let i = 0; i < arr.length; i++) {
-
-    if (arr[i] instanceof Manager) {
+    if (elem instanceof Manager) {
       let text = fs.readFileSync("./templates/manager.html", 'utf8')
       let template = handlebars.compile(text);
-      let result = template(arr[i]);
+      let result = template(elem);
+      cards += result;
     }
 
-    if (arr[i] instanceof Engineer) {
+    if (elem instanceof Engineer) {
       let text = fs.readFileSync("./templates/engineer.html", 'utf8')
       let template = handlebars.compile(text);
-      let result = template(arr[i]);
+      let result = template(elem);
+      cards += result;
     }
 
-    if (arr[i] instanceof Intern) {
+    if (elem instanceof Intern) {
       let text = fs.readFileSync("./templates/intern.html", 'utf8')
       let template = handlebars.compile(text);
-      let result = template(arr[i]);
+      let result = template(elem);
+      cards += result;
     }
 
 
-  }
+  });
 
+  //store cards text in object
+  let cardObject = {cards};
+  
+  //add the created cards to template
+  let text = fs.readFileSync("./templates/main.html", 'utf8')
+  let template = handlebars.compile(text);
+  let result = template(cardObject);
 
+  //create output file 
+  fs.writeFile('./output/myTeam.html', result, e => e ? console.log(e) : console.log('File successfully created!'));
 
 }
 
