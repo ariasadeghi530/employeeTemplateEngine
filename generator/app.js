@@ -24,7 +24,7 @@ const employQuestions = [
   'What is your GitHub username?',
   'What is your school name?'
 ];
-
+const employeeIds = [];
 //global variable to store employee objects
 let employeeArr = [];
 
@@ -34,6 +34,16 @@ function capitalize(s) {
     return '';
   }
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+const validateId = (input) => {
+
+  if (employeeIds.includes(input)) {
+    console.log(` ID already in use`);
+    return false;
+  }
+  return true;
+
 }
 
 //ask the manager the initial questions
@@ -58,22 +68,26 @@ function init() {
     {
       type: 'number',
       name: 'officeNum',
-      message: initQuestions[3]
+      message: initQuestions[3],
+     
     },
     {
       type: 'number',
       name: 'numEngineers',
-      message: initQuestions[4]
+      message: initQuestions[4],
+    
     },
     {
       type: 'number',
       name: 'numInterns',
-      message: initQuestions[5]
+      message: initQuestions[5],
+     
     }
   ])
 
     .then(response => {
       employeeArr.push(new Manager(capitalize(response.name), response.id, response.email, response.officeNum));
+      employeeIds.push(response.id);
       askEngineerQuestions(response.numEngineers, response.numInterns);
     })
     .catch(e => console.error(e));
@@ -93,7 +107,8 @@ async function askEngineerQuestions(numEng, numInt) {
       {
         type: 'number',
         name: 'id',
-        message: employQuestions[1]
+        message: employQuestions[1],
+        validate: validateId
       },
       {
         type: 'input',
@@ -107,6 +122,7 @@ async function askEngineerQuestions(numEng, numInt) {
       }
     ])
       .then(response => {
+        employeeIds.push(response.id);
         employeeArr.push(new Engineer(capitalize(response.name), response.id, response.email, response.github));
       })
       .catch(e => console.error(e));
@@ -128,7 +144,8 @@ async function askInternQuestions(numInt) {
       {
         type: 'number',
         name: 'id',
-        message: employQuestions[1]
+        message: employQuestions[1],
+        validate: validateId
       },
       {
         type: 'input',
@@ -142,19 +159,20 @@ async function askInternQuestions(numInt) {
       }
     ])
       .then(response => {
+        employeeIds.push(response.id);
         employeeArr.push(new Intern(capitalize(response.name), response.id, response.email, response.school));
       })
       .catch(e => console.error(e));
   }
-  
+
   createHTML(employeeArr);
 }
 
 async function createHTML(arr) {
   let cards = '';
-  
+
   //create cards based on object types
-  const objectChecker = await arr.forEach( (elem) => {
+  const objectChecker = await arr.forEach((elem) => {
 
     if (elem instanceof Manager) {
       let text = fs.readFileSync("./templates/manager.html", 'utf8')
@@ -181,14 +199,20 @@ async function createHTML(arr) {
   });
 
   //store cards text in object
-  let cardObject = {cards};
-  
+  let cardObject = { cards };
+
   //add the created cards to template
   let text = fs.readFileSync("./templates/main.html", 'utf8')
   let template = handlebars.compile(text);
   let result = template(cardObject);
 
   //create output file 
+
+  const dir = './output';
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
   fs.writeFile('./output/myTeam.html', result, e => e ? console.log(e) : console.log('File successfully created!'));
 
 }
